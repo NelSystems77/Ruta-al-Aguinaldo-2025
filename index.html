@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' https://placehold.co; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com; style-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://generativelanguage.googleapis.com; frame-ancestors 'none';">
+<meta http-equiv="X-Frame-Options" content="DENY">
+<title>¡NelSystems ruta al aguinaldo 2025!</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+body {
+font-family: 'Poppins', sans-serif;
+background-color: #FDF6E3;
+color: #4A4A4A;
+}
+.countdown-box {
+background-color: #FEFBF3;
+border: 1px solid #EAE0C8;
+border-radius: 0.75rem;
+box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1-rgba(0, 0, 0, 0.03);
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+padding: 1rem 0;
+width: 6rem;
+height: 6rem;
+}
+.countdown-number {
+font-size: 2.25rem;
+font-weight: 700;
+color: #386641;
+line-height: 1;
+}
+.countdown-label {
+font-size: 0.75rem;
+font-weight: 600;
+color: #A68A64;
+text-transform: uppercase;
+margin-top: 0.5rem;
+}
+canvas {
+background-color: #FEFBF3;
+border-radius: 0.75rem;
+border: 2px dashed #EAE0C8;
+cursor: pointer;
+}
+#message {
+position: absolute;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);
+background: transparent;
+color: black;
+padding: 20px;
+border-radius: 10px;
+font-size: 20px;
+font-weight: bold;
+display: none;
+text-align: center;
+white-space: pre-line;
+}
+#message .prize-emoji {
+font-size: 3rem;
+margin-bottom: 0.5rem;
+}
+/* New style for the personalized ideas input */
+.personalized-ideas {
+margin-top: 1rem;
+padding: 1rem;
+border-radius: 0.5rem;
+border: 1px solid #EAE0C8;
+}
+.parade-character {
+font-size: 4rem;
+position: absolute;
+bottom: 50px;
+left: 0;
+display: none;
+transition: transform 0.5s linear;
+}
+</style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+
+<main class="w-full max-w-2xl mx-auto text-center">
+<h1 class="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-800 mb-6">
+El aguinaldo llegará en...
+</h1>
+
+<div id="countdown" class="flex justify-center items-center space-x-2 sm:space-x-4 mb-8">
+<div class="countdown-box">
+<span id="days" class="countdown-number">0</span>
+<span class="countdown-label">Días</span>
+</div>
+<div class="countdown-box">
+<span id="hours" class="countdown-number">0</span>
+<span class="countdown-label">Horas</span>
+</div>
+<div class="countdown-box">
+<span id="minutes" class="countdown-number">0</span>
+<span class="countdown-label">Minutos</span>
+</div>
+<div class="countdown-box">
+<span id="seconds" class="countdown-number">0</span>
+<span class="countdown-label">Segundos</span>
+</div>
+</div>
+<div class="w-full max-w-xl mx-auto relative z-10" style="height: 350px;">
+<canvas id="gameCanvas" class="w-full h-full"></canvas>
+<div id="message" class="absolute inset-0 flex flex-col items-center justify-center text-2xl font-bold bg-black bg-opacity-50 rounded-xl" style="display: none;">
+<span id="prizeEmoji" class="prize-emoji" style="display:none;"></span>
+<span id="messageText"></span>
+</div>
+</div>
+<p id="startPhrase" class="mt-4 text-sm text-gray-500"></p>
+
+<section class="mt-12 p-6 bg-yellow-50 rounded-lg shadow-inner">
+<h2 class="text-2xl font-bold text-gray-800 mb-4">✨ NelSystems te da algunas ideas para invertir tu Aguinaldo ✨</h2>
+
+<div class="flex justify-center">
+<img src="https://placehold.co/192x192/4A4A4A/FDF6E3?text=NELSYSTEMS" alt="NELSYSTEMS" class="rounded-lg mx-auto mb-4 w-48 h-auto" />
+</div>
+<div id="ideasContainer" class="mt-6 text-left" style="display:none;">
+<p id="ideasContent" class="text-gray-700 leading-relaxed"></p>
+</div>
+</section>
+
+</main>
+
+<script>
+const targetDate = new Date('2025-11-28T00:00:00').getTime();
+const daysEl = document.getElementById('days');
+const hoursEl = document.getElementById('hours');
+const minutesEl = document.getElementById('minutes');
+const secondsEl = document.getElementById('seconds');
+const updateCountdown = () => {
+const now = new Date().getTime();
+const distance = targetDate - now;
+if (distance < 0) {
+clearInterval(countdownInterval);
+document.getElementById('countdown').innerHTML = "<h2 class='text-2xl font-bold text-green-600'>¡Llegó el día! 🎉</h2>"
+return;
+}
+const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+daysEl.innerText = days;
+hoursEl.innerText = hours;
+minutesEl.innerText = minutes;
+secondsEl.innerText = seconds;
+};
+const countdownInterval = setInterval(updateCountdown, 1000);
+updateCountdown();
+// --- Game Logic ---
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+const messageEl = document.getElementById('message');
+const messageTextEl = document.getElementById('messageText');
+const prizeEmojiEl = document.getElementById('prizeEmoji');
+const startPhraseEl = document.getElementById('startPhrase');
+const parent = canvas.parentElement;
+
+const groundHeight = 20;
+const prizeEmojis = ['💰', '💰💰', '💰💰💰','💰💰💰💰','💰💰💰💰💰'];
+let playerSize, gameLoopId, paradeLoopId;
+let player, obstacles;
+let gameSpeed, score, gameOver, gameStarted, lastObstacleTime;
+let isParadeActive = false;
+let lastFrameTime = performance.now();
+const themes = [
+{ player: '🐒', obstacle: '🌳', bg: '#FEFBF3' },
+{ player: '☃️', obstacle: '❄️', bg: '#FEFBF3' },
+{ player: '🏄🏻‍♂️', obstacle: '🌊', bg: '#FEFBF3' },
+{ player: '🚵🏼‍♂️', obstacle: '🪨', bg: '#FEFBF3' },
+{ player: '💊', obstacle: '🦠', bg: '#FEFBF3' },
+{ player: '🐷', obstacle: '🎁', bg: '#FEFBF3' },
+{ player: '🪐', obstacle: '🔭', bg: '#0D1B2A' },
+{ player: '🤡', obstacle: '🌍', bg: '#0D1B2A' },
+{ player: '🙀', obstacle: '🐁', bg: '#0D1B2A' },
+{ player: '🏴‍☠️', obstacle: '🎃', bg: '#0D1B2A' }
+];
+const phrases = [
+"La vida no se trata de esperar a que pase la tormenta, sino de aprender a bailar bajo la lluvia.",
+"Lo que hoy parece un problema, mañana puede ser una lección.",
+"La felicidad no depende de lo que tenemos, sino de cómo lo valoramos.",
+"El tiempo es el recurso más valioso, úsalo sabiamente.",
+"A veces perder es la forma de ganar claridad.",
+"La gratitud transforma lo que tenemos en suficiente.",
+"Quien no vive para servir, no sirve para vivir.",
+"Los errores son pruebas de que lo intentamos.",
+"Cada persona que llega a tu vida trae una enseñanza.",
+"La paz interior vale más que cualquier victoria externa.",
+"Lo que das al mundo regresa a ti de alguna manera.",
+"No puedes controlar lo que pasa, pero sí cómo reaccionas.",
+"El silencio también habla.",
+"La paciencia es la clave de los grandes logros.",
+"La comparación es el ladrón de la alegría.",
+"No hay viaje más profundo que el de conocerse a uno mismo.",
+"No podemos elegir lo que sentimos, pero sí lo que hacemos con ello.",
+"A veces lo que llamamos final es solo un nuevo comienzo.",
+"El miedo limita más que la realidad.",
+"El perdón libera a quien perdona, no solo a quien es perdonado.",
+"Lo simple suele ser lo más valioso.",
+"Cada día es una página en blanco.",
+"La vida es frágil, no la malgastes en rencores.",
+"Escuchar es un acto de amor.",
+"La libertad comienza en la mente.",
+"Donde pones tu atención, pones tu energía.",
+"La humildad abre puertas que el orgullo cierra.",
+"Somos responsables de lo que sembramos.",
+"La vida es un reflejo de lo que llevamos dentro.",
+"Quien busca afuera sueña, quien busca adentro despierta.",
+"La soledad enseña lo que la multitud esconde.",
+"Nada externo puede llenar un vacío interno.",
+"El cambio asusta, pero es el motor del crecimiento.",
+"Cada palabra tiene poder, úsala con cuidado.",
+"No hay luz sin sombra.",
+"El presente es el único tiempo real.",
+"Ser feliz no significa tenerlo todo, sino disfrutar de lo que tienes.",
+"La empatía es la base de toda verdadera relación.",
+"El amor propio es el inicio de todo amor sincero.",
+"La adversidad revela la fortaleza interior.",
+"Los finales amargos suelen abrir caminos dulces.",
+"No podemos controlar el viento, pero sí ajustar las velas.",
+"La verdadera riqueza es el tiempo con quienes amas.",
+"El aprendizaje nunca termina.",
+"La vida no es esperar a que pase algo, es atreverse a hacerlo.",
+"La mente puede ser una cárcel o una aliada.",
+"Lo que hoy siembras, mañana lo cosechas.",
+"La autenticidad atrae lo que realmente necesitas.",
+"La calma es poder.",
+"Vivir es aprender a soltar.",
+"Todo lo que siembres, tarde o temprano lo cosecharás.",
+"La verdad siempre termina saliendo a la luz.",
+"La paciencia abre caminos que la prisa destruye.",
+"Tratar a los demás como te gustaría ser tratado nunca falla.",
+"El amor sincero es la base de toda relación duradera.",
+"El orgullo levanta muros, la humildad abre puertas.",
+"No juzgues sin conocer la historia completa.",
+"La sabiduría no está en saber mucho, sino en vivir lo que sabes.",
+"El perdón libera más a quien lo da que a quien lo recibe.",
+"Una palabra amable puede cambiar un día entero.",
+"Donde hay envidia, no hay paz.",
+"El que busca justicia para todos, encuentra dignidad para sí mismo.",
+"El egoísmo divide, la generosidad une.",
+"La vida es más ligera cuando compartes tu carga.",
+"No hay mayor riqueza que una conciencia tranquila.",
+"La gratitud transforma lo ordinario en extraordinario.",
+"El que se enoja fácilmente, pierde fácilmente.",
+"La perseverancia es más fuerte que la fuerza bruta.",
+"El que aprende a dominar su lengua, evita muchos problemas.",
+"Los actos hablan más fuerte que las promesas.",
+"La compasión sana heridas invisibles.",
+"No todos los caminos anchos llevan a buen destino.",
+"La sabiduría comienza con la escucha.",
+"El que cuida lo poco, estará listo para lo mucho.",
+"No pongas tu confianza en lo pasajero, sino en lo que permanece.",
+"La codicia nunca se sacia.",
+"El respeto mutuo es el cimiento de la convivencia.",
+"A veces el silencio es la mejor respuesta.",
+"El amor cubre más errores que la crítica.",
+"Cada día trae su propio reto, no te preocupes por los de mañana.",
+"La justicia tardía sigue siendo justicia.",
+"El que ayuda a otros se fortalece a sí mismo.",
+"La verdad, aunque duela, es mejor que la mentira cómoda.",
+"Los pequeños actos de bondad tienen grandes efectos.",
+"No dejes que el enojo gobierne tus decisiones.",
+"La vida es breve, aprovecha para hacer el bien.",
+"El que escucha consejo, multiplica su sabiduría.",
+"Donde hay amor, hay fuerza.",
+"El odio envenena a quien lo guarda.",
+"No te compares: cada quien tiene su carrera por correr.",
+"Las riquezas sin paz, no son riqueza.",
+"El tiempo que das a otros, nunca es tiempo perdido.",
+"La honestidad abre caminos firmes.",
+"Los buenos frutos nacen de un buen corazón.",
+"La calma vale más que mil palabras apresuradas.",
+"No dejes que lo urgente te quite lo importante.",
+"La rectitud es un camino que siempre regresa al bien.",
+"Cuidar la lengua es cuidar la vida.",
+"El amor y la justicia caminan de la mano.",
+"La esperanza es más fuerte que la desesperación."
+];
+
+let currentThemeIndex = 0;
+let currentLevel = 0;
+
+function displayRandomPhrase() {
+const randomIndex = Math.floor(Math.random() * phrases.length);
+startPhraseEl.innerText = phrases[randomIndex];
+}
+
+function resizeCanvasAndEntities() {
+const parent = canvas.parentElement;
+canvas.width = parent.clientWidth;
+canvas.height = parent.clientHeight;
+playerSize = Math.min(canvas.width, canvas.height) * 0.12;
+player = {
+x: playerSize * 1.5,
+y: canvas.height - groundHeight - playerSize / 2,
+width: playerSize,
+height: playerSize,
+velocityY: 0,
+gravity: 0.6,
+jumpStrength: -20,
+isJumping: false
+};
+ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+function showMessage(text, showPrize = false, prize = '') {
+messageTextEl.innerText = text;
+if (showPrize) {
+prizeEmojiEl.innerText = prize;
+prizeEmojiEl.style.display = 'block';
+} else {
+prizeEmojiEl.style.display = 'none';
+}
+const theme = themes[currentThemeIndex];
+if (theme.bg === '#0D1B2A') {
+messageEl.style.color = '#FDF6E3';
+} else {
+messageEl.style.color = '#4A4A4A';
+}
+messageEl.style.display = 'flex';
+setTimeout(() => {
+hideMessage();
+}, 1500);
+}
+function hideMessage() {
+messageEl.style.display = 'none';
+}
+
+function resetGame() {
+cancelAnimationFrame(gameLoopId);
+obstacles = [];
+gameSpeed = 4;
+score = 0;
+gameOver = false;
+gameStarted = false;
+lastObstacleTime = 0;
+currentThemeIndex = 0;
+currentLevel = 0;
+hideMessage();
+displayRandomPhrase();
+lastFrameTime = performance.now();
+gameLoop();
+}
+
+function handleJump() {
+if (!gameStarted) {
+gameStarted = true;
+hideMessage();
+}
+if (!player.isJumping && !gameOver && !isParadeActive) {
+player.velocityY = player.jumpStrength;
+player.isJumping = true;
+}
+}
+
+canvas.addEventListener('click', (e) => {
+e.preventDefault();
+if (gameOver && !isParadeActive) {
+resetGame();
+} else {
+handleJump();
+}
+});
+
+document.body.addEventListener('keydown', (e) => {
+if (e.code === 'Space') {
+e.preventDefault();
+if (gameOver && !isParadeActive) {
+resetGame();
+} else {
+handleJump();
+}
+}
+});
+
+function drawPlayer() {
+const theme = themes[currentThemeIndex];
+ctx.font = `${player.height}px sans-serif`;
+ctx.textAlign = "center"
+ctx.textBaseline = "middle"
+// Fix 1: Flip the player to face the obstacles
+ctx.save();
+ctx.translate(player.x, player.y);
+ctx.scale(-1, 1);
+ctx.fillText(theme.player, 0, 0);
+ctx.restore();
+}
+const paradeCharacters = themes.map(t => t.player);
+let paradePositions = paradeCharacters.map(() => -200); // Start off-screen
+function paradeLoop() {
+if (!isParadeActive) {
+return;
+}
+ctx.clearRect(0, 0, canvas.width, canvas.height);
+canvas.style.backgroundColor = '#0D1B2A';
+ctx.fillStyle = '#FDF6E3';
+ctx.fillRect(0, canvas.height - groundHeight, canvas.width, groundHeight);
+
+let allCharactersOffScreen = true;
+for (let i = 0; i < paradeCharacters.length; i++) {
+if (paradePositions[i] < canvas.width + playerSize) {
+allCharactersOffScreen = false;
+const position = paradePositions[i];
+ctx.font = `${playerSize}px sans-serif`;
+ctx.textAlign = "center"
+ctx.textBaseline = "middle"
+ctx.fillText(paradeCharacters[i], position, canvas.height - groundHeight - playerSize / 2);
+paradePositions[i] += 5;
+}
+}
+paradeLoopId = requestAnimationFrame(paradeLoop);
+}
+
+function endParade() {
+isParadeActive = false;
+cancelAnimationFrame(paradeLoopId);
+resetGame();
+}
+
+function startParade() {
+isParadeActive = true;
+messageEl.style.color = '#FDF6E3';
+messageEl.style.display = 'flex';
+messageTextEl.innerText = "NelSystems agradece por jugar y esperamos lo hayas disfrutado!"
+paradePositions = paradeCharacters.map((_, i) => -200 * (i + 1));
+paradeLoop();
+
+setTimeout(() => {
+endParade();
+}, 7000);
+}
+
+function drawObstacles() {
+const theme = themes[currentThemeIndex];
+obstacles.forEach(obstacle => {
+ctx.font = `${obstacle.height}px sans-serif`;
+ctx.textAlign = "center"
+ctx.textBaseline = "middle"
+ctx.fillText(theme.obstacle, obstacle.x, obstacle.y);
+});
+}
+
+function drawGround() {
+const theme = themes[currentThemeIndex];
+canvas.style.backgroundColor = theme.bg;
+ctx.fillStyle = (currentLevel >= 6) ? '#FDF6E3' : '#A68A64';
+ctx.fillRect(0, canvas.height - groundHeight, canvas.width, groundHeight);
+ctx.fillStyle = (currentLevel >= 6) ? '#FDF6E3' : '#386641';
+for (let i = 0; i < canvas.width / 15; i++) {
+ctx.fillRect(i * 15 + (score % 15), canvas.height - groundHeight - 5, 5, 5);
+}
+}
+
+function rectsOverlap(ax, ay, aw, ah, bx, by, bw, bh) {
+return (Math.abs(ax - bx) * 2 < (aw + bw)) && (Math.abs(ay - by) * 2 < (ah + bh));
+}
+function displayLevelMessage(level, prize) {
+const theme = themes[currentThemeIndex];
+messageTextEl.innerText = `¡Nivel ${level}!\n\nPremio:\n${prize}`;
+if (theme.bg === '#0D1B2A') {
+messageEl.style.color = '#FDF6E3';
+} else {
+messageEl.style.color = '#4A4A4A';
+}
+messageEl.style.display = 'flex';
+setTimeout(() => {
+hideMessage();
+}, 1500);
+}
+
+// Fix 2: Use delta time to normalize game speed
+function gameLoop(currentTime) {
+gameLoopId = requestAnimationFrame(gameLoop);
+const deltaTime = currentTime - lastFrameTime;
+lastFrameTime = currentTime;
+if (gameOver || isParadeActive) {
+return;
+}
+ctx.clearRect(0, 0, canvas.width, canvas.height);
+drawGround();
+if (gameStarted) {
+player.velocityY += player.gravity;
+player.y += player.velocityY;
+if (player.y >= canvas.height - groundHeight - player.height / 2) {
+player.y = canvas.height - groundHeight - player.height / 2;
+player.velocityY = 0;
+player.isJumping = false;
+}
+const newLevel = Math.floor(score / 500);
+if (newLevel > currentLevel) {
+currentLevel = newLevel;
+if (currentLevel >= 10) {
+gameOver = true;
+startParade();
+return;
+}
+currentThemeIndex = Math.min(newLevel, themes.length - 1);
+const prizeIndex = currentLevel % prizeEmojis.length;
+displayLevelMessage(currentLevel + 1, prizeEmojis[prizeIndex]);
+}
+if (Date.now() - lastObstacleTime > 2000 * (1 - (gameSpeed - 2) / 10)) { // Adjust obstacle frequency with speed
+if (Math.random() < 0.35) {
+const h = playerSize * 0.8;
+obstacles.push({
+x: canvas.width,
+y: canvas.height - groundHeight - h / 2,
+width: h,
+height: h
+});
+lastObstacleTime = Date.now();
+}
+}
+obstacles.forEach((obstacle, i) => {
+obstacle.x -= gameSpeed * (deltaTime / 16.67); // Normalize speed
+if (obstacle.x + obstacle.width / 2 < 0) {
+obstacles.splice(i, 1);
+}
+if (rectsOverlap(player.x, player.y, player.width, player.height,
+obstacle.x, obstacle.y, obstacle.width, obstacle.height)) {
+gameOver = true;
+const message = `¡Perdiste! Inténtalo de nuevo.`;
+showMessage(message);
+}
+});
+drawObstacles();
+score++;
+gameSpeed += 0.00075;
+ctx.fillStyle = (currentLevel >= 6) ? '#FDF6E3' : '#A68A64';
+ctx.font = '16px Poppins';
+ctx.textAlign = 'left';
+ctx.fillText(`Puntaje: ${score}`, 10, 20);
+}
+drawPlayer();
+}
+
+window.addEventListener('resize', () => {
+  resetGame();
+});
+
+function init() {
+    resizeCanvasAndEntities();
+    resetGame();
+    displayRandomIdea();
+}
+
+window.onload = init;
+
+const ideasContainer = document.getElementById('ideasContainer');
+const ideasContent = document.getElementById('ideasContent');
+
+const ideas = [
+"🛡️ Seguridad financiera: Arma o refuerza un fondo de emergencias (mínimo 1-3 meses de gastos).",
+"🛡️ Seguridad financiera: Cancela deudas pequeñas con intereses altos (tarjetas, préstamos rápidos).",
+"🛡️ Seguridad financiera: Haz un abono extraordinario a una deuda grande (hipoteca, carro, préstamo personal).",
+"🛡️ Seguridad financiera: Aparta una parte en una cuenta aparte para gastos de inicio de año (útiles, marchamo, matrícula).",
+"🛡️ Seguridad financiera: Compra un seguro médico o de vida si no tienes.",
+"📈 Inversión y crecimiento: Abre o refuerza un certificado a plazo en el banco.",
+"📈 Inversión y crecimiento: Invierte en fondos de inversión locales (corto o mediano plazo).",
+"📈 Inversión y crecimiento: Compra acciones o ETFs (si ya manejas la idea).",
+"📈 Inversión y crecimiento: Aporta extra a tu fondo de pensión voluntario.",
+"📈 Inversión y crecimiento: Inicia un microemprendimiento (ej: productos, servicios, ventas digitales).",
+"🏠 Hogar y familia: Haz mejoras en casa (reparaciones pendientes que ahorran dinero después).",
+"🏠 Hogar y familia: Compra electrodomésticos eficientes que reduzcan consumo eléctrico.",
+"🏠 Hogar y familia: Reserva para gastos escolares del próximo año.",
+"🏠 Hogar y familia: Adelanta el pago de alquiler o hipoteca para estar más holgado en enero.",
+"🏠 Hogar y familia: Separa un monto para salud preventiva (exámenes médicos, dentista, anteojos).",
+"📚 Educación y desarrollo personal: Invierte en un curso en línea (idiomas, finanzas, tecnología).",
+"📚 Educación y desarrollo personal: Compra libros o audiolibros que te aporten valor.",
+"📚 Educación y desarrollo personal: Haz una certificación profesional que mejore tu carrera.",
+"📚 Educación y desarrollo personal: Paga un taller práctico (cocina, fotografía, programación, etc.).",
+"📚 Educación y desarrollo personal: Separa un monto para eventos o congresos en 2025.",
+"💻 Tecnología y productividad: Actualiza tu computadora o celular si ya está muy obsoleto.",
+"💻 Tecnología y productividad: Compra software o suscripciones que te ayuden en tu trabajo o estudios.",
+"💻 Tecnología y productividad: Instala internet de mejor calidad si lo necesitas para teletrabajo/estudio.",
+"💻 Tecnología y productividad: Consigue un backup físico o en la nube para proteger tus datos.",
+"💻 Tecnología y productividad: Compra accesorios que mejoren tu productividad (silla ergonómica, monitor, teclado).",
+"🌱 Bienestar y disfrute consciente: Destina un % fijo a viajar (aunque sea dentro del país).",
+"🌱 Bienestar y disfrute consciente: Reserva para una experiencia significativa (concierto, retiro, curso de cocina gourmet).",
+"🌱 Bienestar y disfrute consciente: Haz un regalo con propósito (algo útil, no solo de consumo).",
+"🌱 Bienestar y disfrute consciente: Separa un monto para donar o ayudar a alguien necesitado.",
+"🌱 Bienestar y disfrute consciente: Date un gusto personal pequeño y planificado (ej: una cena especial o gadget)."
+];
+
+function displayRandomIdea() {
+ideasContainer.style.display = 'block';
+const randomIndex = Math.floor(Math.random() * ideas.length);
+ideasContent.innerText = ideas[randomIndex];
+}
+</script>
+</body>
+</html>
+
